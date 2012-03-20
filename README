@@ -1,7 +1,8 @@
 Django Maintenance
 ==================
 
-django-maintenance lets you define maintenance windows as objects.
-These maintenance windows are time slots where your website or parts of it is non-operational. django-maintenance ships with a middleware that lets you display a friendly message to your users during the downtime.
+An maintenance mode that allows you to put your django project into maintenance mode via command line.
 
+I start writing this because all others implementations of maintenance mode did not allow to alter/update the database
+schema.
 
