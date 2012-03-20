@@ -1,0 +1,6 @@
+include README
+include AUTHORS
+include LICENSE
+include MANIFEST.in
+include setup.py
+recursive-include maintenance *.py

@@ -5,22 +5,3 @@ django-maintenance lets you define maintenance windows as objects.
 These maintenance windows are time slots where your website or parts of it is non-operational. django-maintenance ships with a middleware that lets you display a friendly message to your users during the downtime.
 
 
-Apache configuration example::
-
-    RewriteEngine On
-
-    # If this file (toggle file) exsists then put the site into maintenance mode
-
-    RewriteCond <<<<django.conf.settings.MAINTENANCE_FILE>>>> -f
-    RewriteCond %{REQUEST_URI} !/static/pasportng/img/under-maintenance.gif
-
-    # If coming from approved ip address, then don't put it into maintenance mode,
-    # here I'm using HTTP:x-forwarded-for in place of REMOTE_ADDR this is because some users (or your yourself) might
-    # arrive to the site via a proxy server, so it's more accurate to use HTTP:x-forwarded-for to get the real ip address,
-    # Also please note that the ip address below has '\' in them because HTTP:x-forwarded-for returns or stores the ip address as a comma delimited list
-
-    RewriteCond %{HTTP:x-forwarded-for} !^127\.127\.127\.127$
-
-    #redirect to the maintenance mode page
-    RewriteRule ^(.+) <<<<<django.conf.settings.MAINTENANCE_URL>>>> [RL]
-
