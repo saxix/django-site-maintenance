@@ -19,15 +19,15 @@ class Command(LabelCommand):
         pass
 
     def handle_label(self, cmd, **options):
-        if cmd not in ('on', 'off', 'check'):
+        if cmd not in ('on', 'off', 'check', 'activate', 'deactivate', 'status'):
             raise CommandError('Allowed options are: %s' % self.args)
 
-        if cmd == 'check':
+        if cmd in ('check', 'status'):
             print "Status: %s - Active sessions: %s" % ( api.STATUS._labels[api.status()], api.get_active_users())
-        elif cmd == 'on':
+        elif cmd in ('on', 'activate') :
             ignore_session = options.get('ignore_session')
             api.start(ignore_session)
-        elif cmd == 'off':
+        elif cmd in ('off', 'deactivate'):
             api.stop()
 
 
