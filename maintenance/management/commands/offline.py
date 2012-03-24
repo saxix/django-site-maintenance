@@ -23,7 +23,7 @@ class Command(LabelCommand):
             raise CommandError('Allowed options are: %s' % self.args)
 
         if cmd in ('check', 'status'):
-            print "Status: %s - Active sessions: %s" % ( api.STATUS._labels[api.status()], api.get_active_users())
+            api.check()
         elif cmd in ('on', 'activate') :
             ignore_session = options.get('ignore_session')
             api.start(ignore_session)

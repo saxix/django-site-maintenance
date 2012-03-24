@@ -42,4 +42,5 @@ class CommandTask( object ):
         self.lock.release()
         unregister_session(self._key)
         if type:
+            logger.exception(value)
             raise type(value)

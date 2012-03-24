@@ -1,8 +1,7 @@
-Django Maintenance
+Django Site Maintenance
 ==================
 
-An maintenance mode that allows you to put your django project into maintenance mode via command line.
+An maintenance mode that allows you to put your django project into offline mode via command line.
 
-I start writing this because all others implementations of maintenance mode did not allow to alter/update the database
-schema.
+I start writing this because all others implementations of maintenance mode did not allow to alter/update the database schema.
 
