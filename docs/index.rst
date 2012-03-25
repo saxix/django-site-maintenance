@@ -23,10 +23,11 @@ Active users can be informed of the oncoming system shutdown by a on scree messa
     components
     api
 
-Code
-====
+Links
+-----
 
-https://github.com/saxix/django-site-maintenance
+   * Code: http://github.com/saxix/django-site-maintenance
+   * Docs: http://readthedocs.org/docs/django-site-maintenance/en/latest/index.html
 
 
 Indices and tables

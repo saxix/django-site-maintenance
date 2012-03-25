@@ -47,7 +47,7 @@ Optionally set::
 
 
 .. note::
-    The standard location of the `MAINTENANCE_URL` is ::doc::STATIC_URL/maintenance/maintenance.html
+    The standard location of the `MAINTENANCE_URL` is $STATIC_URL/maintenance/maintenance.html
 
 Configuring Web server
 ----------------------
