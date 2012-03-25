@@ -71,8 +71,8 @@ MaintenanceMiddleware
 
 TODO
 
-\The ``maintenance`` context-processor
--------------------------------------
+The ``maintenance`` context-processor
+--------------------------------------
 
 TODO
 

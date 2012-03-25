@@ -1,7 +1,13 @@
-Django Site Maintenance
-==================
+Django Site Maintenance (DSM)
+=============================
 
 An maintenance mode that allows you to put your django project into offline mode via command line.
 
-I start writing this because all others implementations of maintenance mode did not allow to alter/update the database schema.
+The main difference from other implementation is than DSM completly disconnect your django so you can:
+
+ - upgrade your code
+ - update/alter database schema
+ - update/modify your virtualenv
+
+
 
