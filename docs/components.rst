@@ -64,3 +64,15 @@ Options
 
     $ ./manage.py offline on --force
     Status: OFFLINE - Active sessions: 1
+
+
+MaintenanceMiddleware
+---------------------
+
+TODO
+
+\The ``maintenance`` context-processor
+-------------------------------------
+
+TODO
+

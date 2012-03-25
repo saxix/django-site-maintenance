@@ -4,9 +4,6 @@
 API
 ===
 
-.. automodule:: maintenance.api
-
-
 .. autofunction:: maintenance.api.start
 
 .. autofunction:: maintenance.api.stop
@@ -22,3 +19,8 @@ API
 .. autofunction:: maintenance.api.is_online
 
 .. autofunction:: maintenance.api.status
+
+
+.. autofunction:: maintenance.context_processors.maintenance
+
+.. autoclass:: maintenance.middleware.MaintenanceMiddleware
