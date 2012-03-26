@@ -45,11 +45,16 @@ def scan_dir( target, packages=[], data_files=[] ):
 
 packages, data_files = scan_dir('maintenance')
 
+if VERSION[3] == 'final':
+    download_tag = RELEASE
+else:
+    download_tag = 'master'
+
 setup(
     name=NAME,
     version=RELEASE,
-    url='https://github.com/saxix/django-server-maintenance',
-    download_url = 'https://github.com/saxix/django-server-maintenance/tarball/master',
+    url='https://github.com/saxix/django-site-maintenance',
+    download_url = 'https://github.com/saxix/django-site-maintenance/tarball/%s' % download_tag,
     author='sax',
     author_email='sax@os4d.org',
     license='BSD',
@@ -57,13 +62,22 @@ setup(
     data_files=data_files,
     include_package_data=True,
     platforms=['any'],
-    install_requires=[],
-    classifiers=['Development Status :: 3 - Alpha',
+    classifiers=[
+                 'Development Status :: 5 - Production/Stable',
                  'Environment :: Web Environment',
                  'Framework :: Django',
+                 'Intended Audience :: Developers',
+                 'License :: OSI Approved :: BSD License',
                  'Operating System :: OS Independent',
                  'Programming Language :: Python',
-                 'Intended Audience :: Developers',
+                 'Programming Language :: Python :: 2.5',
+                 'Programming Language :: Python :: 2.6',
+                 'Programming Language :: Python :: 2.7',
+                 'Topic :: Internet :: WWW/HTTP',
+                 'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+                 'Topic :: Internet :: WWW/HTTP :: WSGI',
+                 'Topic :: Software Development :: Libraries :: Application Frameworks',
+                 'Topic :: Software Development :: Libraries :: Python Modules',
                  ],
     long_description=open('README').read()
 )
