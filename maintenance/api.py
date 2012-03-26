@@ -1,5 +1,6 @@
 from django.utils import timezone
 import os
+import sys
 from time import sleep
 import time
 from types import *
@@ -10,13 +11,13 @@ def enum(**enums):
     enums['_labels'] = dict(zip(enums.values(), map(str.upper, enums.keys())))
     return type('Enum', (), enums)
 
-STATUS = enum(STARTED=1, OFFLINE=2, ONLINE=4)
+STATUS = enum(OFFLINE=2, PENDING=3, ONLINE=4)
 MAINTENANCE_FILE = getattr(settings, 'MAINTENANCE_FILE', '/tmp/DJANGO_MAINTENANCE_FILE_%s' % settings.SITE_ID)
 PENDING_MAINTENANCE_FILE = "%s_" % MAINTENANCE_FILE
 MAINTENANCE_URL = getattr(settings, 'MAINTENANCE_URL', static('maintenance/maintenance.html'))
 
 
-def start(ignore_session=False):
+def start(ignore_session=False, timeout=60, verbosity=1):
     """ activate maintenance mode.
     this not mean that the application will be down. Check `is_active` for that.
     Logged users continue to work but no other logins will be allowed
@@ -32,24 +33,28 @@ def start(ignore_session=False):
                 if not users:
                     break
                 if not rounds:
-                    print "Active sessions detected. Waiting for logout. (Session timeout set to %s secs) " % settings.SESSION_COOKIE_AGE
+                    if verbosity > 0:
+                        print "Active sessions detected. Waiting for logout. (Session timeout set to %s secs) " % settings.SESSION_COOKIE_AGE
+                        print "Type double ^C to stop"
+                        sys.stdout.write(
+                            "%s pending sessions. %s (%d sec)\r" % (users, C[rounds % 2], round(time.time() - _start)))
+                        sys.stdout.flush()
                 rounds += 1
-                sys.stdout.write(
-                    "%s pending sessions. %s (%d sec)\r" % (users, C[rounds % 2], round(time.time() - _start)))
-                sys.stdout.flush()
+                if rounds>= timeout:
+                    return
                 sleep(1)
         except KeyboardInterrupt:
-            print 'Interrupt'
+            print '\nInterrupt'
             return
         finally:
-            os.unlink(PENDING_MAINTENANCE_FILE)
+            if os.path.isfile(PENDING_MAINTENANCE_FILE):
+                os.unlink(PENDING_MAINTENANCE_FILE)
 
     open(MAINTENANCE_FILE, 'w').close()
-    check()
 
 
 def check():
-    print "Status: %s - Active sessions: %s" % ( STATUS._labels[status()], get_active_users())
+    return "Status: %s - Active sessions: %s" % ( STATUS._labels[status()], get_active_users())
 
 
 def stop():
@@ -58,7 +63,6 @@ def stop():
 
     if os.path.isfile(PENDING_MAINTENANCE_FILE):
         os.unlink(PENDING_MAINTENANCE_FILE)
-    check()
 
 
 def get_active_users():

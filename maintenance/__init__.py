@@ -1,5 +1,5 @@
 NAME = 'django-site-maintenance'
-VERSION = __version__ = (0, 1, 2, 'final', 0)
+VERSION = __version__ = (0, 1, 3, 'beta', 0)
 __author__ = 'sax'
 
 
