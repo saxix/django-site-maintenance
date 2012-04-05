@@ -24,7 +24,7 @@ def unregister_session(session_key):
 
 class CommandTask( object ):
     def __init__( self, session_key, force=False, timeout=1 ):
-        self._key= session_key
+        self._key= "%s.lock" % session_key
         self.lock = FileLock(self._key)
 
         if force:
@@ -36,7 +36,11 @@ class CommandTask( object ):
             raise CommandRunningError('Unable to lock', e)
 
     def __enter__( self ):
-        register_session(self._key)
+        try:
+            register_session(self._key)
+        except:
+            self.lock.release()
+            raise
 
     def __exit__( self, type, value, tb ):
         self.lock.release()
