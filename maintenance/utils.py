@@ -23,6 +23,20 @@ def unregister_session(session_key):
     session.delete()
 
 class CommandTask( object ):
+    """ You should not shutdown your application if any user is logged  in or
+    any command running on so this context manager that allow to register a new session
+    for the current command so that will be possible to check for
+    running commands as for logged user.
+
+    how to use it:
+
+    def handle(self, *args, **options):
+        with CommandTask("mycommand", force=, timeout=timeout):
+            ...
+            ...
+
+
+    """
     def __init__( self, session_key, force=False, timeout=1 ):
         self._key= "%s.lock" % session_key
         self.lock = FileLock(self._key)

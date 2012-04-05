@@ -24,3 +24,5 @@ API
 .. autofunction:: maintenance.context_processors.maintenance
 
 .. autoclass:: maintenance.middleware.MaintenanceMiddleware
+
+.. autoclass:: maintenance.utils.CommandTask
