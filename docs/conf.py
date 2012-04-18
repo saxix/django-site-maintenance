@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Django Grappelli documentation build configuration file, created by
+# Django site maintenance documentation build configuration file, created by
 # sphinx-quickstart on Sun Dec  5 19:11:46 2010.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -14,6 +14,9 @@
 import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),'..')))
 import maintenance
+from django.conf import settings
+settings.configure()
+settings.SITE_ID=1
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
