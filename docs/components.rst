@@ -5,7 +5,7 @@
 
 Components
 ==========
-This section describe the componenets of |mnt|
+This section describe the components of |mnt|
 
 - offline command
 - MaintenanceMiddleware
@@ -17,7 +17,7 @@ This section describe the componenets of |mnt|
 The ``offline`` command
 -----------------------
 
-The commannd ``activate``, ``deacttivate``, ``check`` the offline status.::
+The command ``activate``, ``deactivate``, ``check`` the offline status.::
 
 $ django-admin.py offline (activate|deactivate|status) [--force]
 
