@@ -1,7 +1,7 @@
 import logging
 from django.conf import settings
 from django.utils.importlib import import_module
-from maintenance.management.lockfile import FileLock, LockFailed, AlreadyLocked, LockTimeout
+from maintenance.management.lockfile import FileLock, LockFailed, AlreadyLocked, LockTimeout, NotLocked
 
 __all__ = ['register_session', 'unregister_session', 'CommandTask', 'CommandRunningError']
 logger = logging.getLogger("commands")
@@ -44,7 +44,10 @@ class CommandTask( object ):
             raise
 
     def __exit__( self, type, value, tb ):
-        self.lock.release()
+        try:
+            self.lock.release()
+        except NotLocked:
+            pass
         unregister_session(self._key)
         if type:
             logger.exception(value)
