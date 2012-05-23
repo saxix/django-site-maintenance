@@ -1,3 +1,4 @@
+import logging
 from django.conf import settings
 from django.core.files import temp
 from django.core.management import call_command
@@ -5,13 +6,31 @@ from django.test.testcases import TestCase, SimpleTestCase
 from django.utils import unittest
 import os
 import time
-from maintenance import api
-
+from maintenance import api, middleware
 
 class MaintenanceTestCaseMixIn(object):
+
+    def log_to_console(self):
+#        logging.disable(logging.CRITICAL)
+        formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
+        consoleLogger = logging.StreamHandler()
+        consoleLogger.setLevel(logging.DEBUG)
+        consoleLogger.setFormatter(formatter)
+
+        rootLogger = logging.getLogger()
+        rootLogger.addHandler(consoleLogger)
+        rootLogger.setLevel(logging.NOTSET)
+
+        api.logger.setHandler(consoleLogger)
+        middleware.logger.setHandler(consoleLogger)
+        api.logger.setLevel(logging.DEBUG)
+        middleware.logger.setLevel(logging.DEBUG)
+
+
     def setUp(self):
         api.MAINTENANCE_FILE = temp.NamedTemporaryFile('rw', delete=False).name
         api.PENDING_MAINTENANCE_FILE = "%s_" % api.MAINTENANCE_FILE
+        self.log_to_console()
 
     def tearDown(self):
         api.stop()
@@ -51,6 +70,7 @@ class TestAPI(SimpleTestCase, MaintenanceTestCaseMixIn):
 
 class TestMiddleware(TestCase, MaintenanceTestCaseMixIn):
     fixtures = ['sax.json', ]
+    urls = 'maintenance.test_urls'
     MIDDLEWARE_CLASSES = ['django.contrib.sessions.middleware.SessionMiddleware',
                           'django.contrib.auth.middleware.AuthenticationMiddleware',
                           'maintenance.middleware.MaintenanceMiddleware',
@@ -69,7 +89,7 @@ class TestMiddleware(TestCase, MaintenanceTestCaseMixIn):
         kwargs.setdefault('timeout', 10)
         p = Process(target=api.start, kwargs=kwargs)
         p.start()
-        time.sleep(2)
+        time.sleep(5)
 
     def test_logged_user_allowed(self):
         with self.settings(
@@ -85,9 +105,13 @@ class TestMiddleware(TestCase, MaintenanceTestCaseMixIn):
             self.assertEqual(response.status_code, 200)
 
     def test_logged_user_forced(self):
+        # not sure this is required
+        # web server should itercept request first
+        # in any case double check
         with self.settings(
             MIDDLEWARE_CLASSES=TestMiddleware.MIDDLEWARE_CLASSES,
-            INSTALLED_APPS=TestMiddleware.INSTALLED_APPS):
+            INSTALLED_APPS=TestMiddleware.INSTALLED_APPS
+        ):
             api.stop() # just to be sure
             assert api.is_online()
             self.client.login(**{'username': 'sax', 'password': '123'})

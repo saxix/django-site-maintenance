@@ -1,3 +1,4 @@
+import logging
 from django.utils import timezone
 import os
 import sys
@@ -6,6 +7,7 @@ import time
 from types import *
 from django.templatetags.static import static
 from django.conf import settings
+logger = logging.getLogger("maintenance")
 
 def enum(**enums):
     enums['_labels'] = dict(zip(enums.values(), map(str.upper, enums.keys())))
@@ -24,6 +26,7 @@ def start(ignore_session=False, timeout=60, verbosity=1):
     """
     C = ['*', '-']
     rounds = 0
+    logger.info('Maintenance mode start pending')
     open(PENDING_MAINTENANCE_FILE, 'w').close()
     if not ignore_session:
         try:
@@ -51,6 +54,7 @@ def start(ignore_session=False, timeout=60, verbosity=1):
                 os.unlink(PENDING_MAINTENANCE_FILE)
 
     open(MAINTENANCE_FILE, 'w').close()
+    logger.info('Maintenance mode started')
 
 
 def check():
@@ -63,6 +67,7 @@ def stop():
 
     if os.path.isfile(PENDING_MAINTENANCE_FILE):
         os.unlink(PENDING_MAINTENANCE_FILE)
+    logger.info('Maintenance mode stop')
 
 
 def get_active_users():
