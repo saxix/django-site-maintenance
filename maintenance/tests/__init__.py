@@ -11,7 +11,7 @@ from maintenance import api, middleware
 class MaintenanceTestCaseMixIn(object):
 
     def log_to_console(self):
-#        logging.disable(logging.CRITICAL)
+    #        logging.disable(logging.CRITICAL)
         formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
         consoleLogger = logging.StreamHandler()
         consoleLogger.setLevel(logging.DEBUG)
@@ -70,7 +70,7 @@ class TestAPI(SimpleTestCase, MaintenanceTestCaseMixIn):
 
 class TestMiddleware(TestCase, MaintenanceTestCaseMixIn):
     fixtures = ['sax.json', ]
-    urls = 'maintenance.test_urls'
+    urls = 'maintenance.tests.test_urls'
     MIDDLEWARE_CLASSES = ['django.contrib.sessions.middleware.SessionMiddleware',
                           'django.contrib.auth.middleware.AuthenticationMiddleware',
                           'maintenance.middleware.MaintenanceMiddleware',

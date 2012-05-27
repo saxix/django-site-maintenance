@@ -9,4 +9,4 @@ env:
 install:
   - pip install -q Django==$DJANGO_VERSION
   - python setup.py -q install
-#pip install -r requirements.txt --use-mirrors
+script: django-admin.py test maintenance --settings=maintenance.tests.test_settings
