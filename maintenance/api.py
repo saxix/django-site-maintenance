@@ -1,11 +1,17 @@
 import logging
-from django.utils import timezone
+import datetime
+#from django.utils import timezone
 import os
-import sys
 from time import sleep
 import time
 from types import *
-from django.templatetags.static import static
+try:
+    from django.templatetags.static import static
+except ImportError: # 1.3 fallback
+    from urlparse import urljoin
+    def static(path):
+        return urljoin(settings.STATIC_URL, path)
+
 from django.conf import settings
 logger = logging.getLogger("maintenance")
 
@@ -74,7 +80,7 @@ def get_active_users():
     from django.db import transaction
     from django.contrib.sessions.models import Session
 
-    Session.objects.filter(expire_date__lt=timezone.now()).delete()
+    Session.objects.filter(expire_date__lt=datetime.datetime.now()).delete()
     transaction.commit_unless_managed()
     return Session.objects.count()
 

@@ -1,12 +1,11 @@
 import logging
-from django.conf import settings
 from django.core.files import temp
 from django.core.management import call_command
-from django.test.testcases import TestCase, SimpleTestCase
-from django.utils import unittest
+from django.test.testcases import TestCase
 import os
 import time
 from maintenance import api, middleware
+from maintenance.tests.future import SimpleTestCase
 
 class MaintenanceTestCaseMixIn(object):
 
@@ -50,7 +49,7 @@ class TestCommand(TestCase, MaintenanceTestCaseMixIn):
         self.assertFalse(os.path.exists(api.MAINTENANCE_FILE))
 
 
-class TestAPI(SimpleTestCase, MaintenanceTestCaseMixIn):
+class TestAPI(TestCase, MaintenanceTestCaseMixIn):
     def test_start(self):
         api.start()
         self.assertTrue(os.path.exists(api.MAINTENANCE_FILE))
@@ -68,7 +67,7 @@ class TestAPI(SimpleTestCase, MaintenanceTestCaseMixIn):
         self.assertTrue(api.is_online())
 
 
-class TestMiddleware(TestCase, MaintenanceTestCaseMixIn):
+class TestMiddleware(SimpleTestCase, MaintenanceTestCaseMixIn):
     fixtures = ['sax.json', ]
     urls = 'maintenance.tests.test_urls'
     MIDDLEWARE_CLASSES = ['django.contrib.sessions.middleware.SessionMiddleware',
