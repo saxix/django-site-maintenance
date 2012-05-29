@@ -5,12 +5,13 @@ from django.test.testcases import TestCase
 import os
 import time
 from maintenance import api, middleware
+from maintenance.api import SUCCESS, ERROR_TIMEOUT
 from maintenance.tests.future import SimpleTestCase
+from maintenance.utils import register_session
 
 class MaintenanceTestCaseMixIn(object):
 
     def log_to_console(self):
-    #        logging.disable(logging.CRITICAL)
         formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
         consoleLogger = logging.StreamHandler()
         consoleLogger.setLevel(logging.DEBUG)
@@ -48,10 +49,14 @@ class TestCommand(TestCase, MaintenanceTestCaseMixIn):
         call_command('offline', 'deactivate', verbosity=0)
         self.assertFalse(os.path.exists(api.MAINTENANCE_FILE))
 
+    def test_timeout(self):
+        register_session('ffffff')
+        self.assertRaises(SystemExit, call_command, 'offline', 'activate', verbosity=0, timeout=3)
 
 class TestAPI(TestCase, MaintenanceTestCaseMixIn):
     def test_start(self):
-        api.start()
+        ret, msg = api.start()
+        self.assertEqual(ret, SUCCESS)
         self.assertTrue(os.path.exists(api.MAINTENANCE_FILE))
         self.assertFalse(os.path.exists(api.PENDING_MAINTENANCE_FILE))
 
@@ -61,7 +66,8 @@ class TestAPI(TestCase, MaintenanceTestCaseMixIn):
         self.assertFalse(os.path.exists(api.PENDING_MAINTENANCE_FILE))
 
     def test_is_online(self):
-        api.start()
+        ret, msg = api.start()
+        self.assertEqual(ret, SUCCESS)
         self.assertFalse(api.is_online())
         api.stop()
         self.assertTrue(api.is_online())
@@ -125,3 +131,6 @@ class TestMiddleware(SimpleTestCase, MaintenanceTestCaseMixIn):
             self._activate(verbosity=1)
             response = self.client.get('/admin/')
             self.assertEqual(response.status_code, 302)
+
+    def test_message(self):
+        pass

@@ -1,7 +1,7 @@
 import logging
 import datetime
 #from django.utils import timezone
-import os
+import os, sys
 from time import sleep
 import time
 from types import *
@@ -24,6 +24,10 @@ MAINTENANCE_FILE = getattr(settings, 'MAINTENANCE_FILE', '/tmp/DJANGO_MAINTENANC
 PENDING_MAINTENANCE_FILE = "%s_" % MAINTENANCE_FILE
 MAINTENANCE_URL = getattr(settings, 'MAINTENANCE_URL', static('maintenance/maintenance.html'))
 
+SUCCESS = 0
+ERROR_BREAK   =1
+ERROR_TIMEOUT =2
+ERROR_GENERIC =3
 
 def start(ignore_session=False, timeout=60, verbosity=1):
     """ activate maintenance mode.
@@ -32,6 +36,7 @@ def start(ignore_session=False, timeout=60, verbosity=1):
     """
     C = ['*', '-']
     rounds = 0
+    code = ERROR_GENERIC
     logger.info('Maintenance mode start pending')
     open(PENDING_MAINTENANCE_FILE, 'w').close()
     if not ignore_session:
@@ -50,21 +55,21 @@ def start(ignore_session=False, timeout=60, verbosity=1):
                         sys.stdout.flush()
                 rounds += 1
                 if rounds>= timeout:
-                    return
+                    return ERROR_TIMEOUT, '\nTimeout'
                 sleep(1)
         except KeyboardInterrupt:
-            print '\nInterrupt'
-            return
+            return ERROR_BREAK, '\nInterrupt'
         finally:
             if os.path.isfile(PENDING_MAINTENANCE_FILE):
                 os.unlink(PENDING_MAINTENANCE_FILE)
 
     open(MAINTENANCE_FILE, 'w').close()
     logger.info('Maintenance mode started')
+    return SUCCESS, 'Maintenance mode started'
 
 
 def check():
-    return "Status: %s - Active sessions: %s" % ( STATUS._labels[status()], get_active_users())
+    return 0, "Status: %s - Active sessions: %s" % ( STATUS._labels[status()], get_active_users())
 
 
 def stop():
@@ -74,7 +79,7 @@ def stop():
     if os.path.isfile(PENDING_MAINTENANCE_FILE):
         os.unlink(PENDING_MAINTENANCE_FILE)
     logger.info('Maintenance mode stop')
-
+    return 0, 'Maintenance mode stop'
 
 def get_active_users():
     from django.db import transaction

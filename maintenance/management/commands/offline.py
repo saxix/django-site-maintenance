@@ -26,20 +26,24 @@ class Command(LabelCommand):
         verbosity = options.get('verbosity')
         timeout = options.get('timeout')
         ignore_session = options.get('ignore_session')
+        ret, msg = 0,'Unknow error'
 
         if cmd not in ('on', 'off', 'check', 'activate', 'deactivate', 'status'):
             raise CommandError('Allowed options are: %s' % self.args)
 
         if cmd in ('check', 'status'):
-            print api.check()
+            ret, msg = api.check()
+            print msg
         elif cmd in ('on', 'activate'):
-            api.start(ignore_session, timeout, verbosity)
+            ret, msg = api.start(ignore_session, timeout, verbosity)
             if verbosity >= 1:
-                print api.check()
+                print msg
         elif cmd in ('off', 'deactivate'):
-            api.stop()
+            ret, msg = api.stop()
             if verbosity >= 1:
-                print api.check()
+                print msg
+        if ret:
+            raise CommandError(msg)
 
 
 
