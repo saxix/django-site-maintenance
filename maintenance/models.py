@@ -2,7 +2,6 @@ from datetime import datetime
 from django.db import models
 from django.db.models.manager import Manager
 from django.utils.translation import ugettext_lazy as _
-import settings
 
 class MaintenanceWindowManager(Manager):
 
