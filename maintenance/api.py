@@ -5,14 +5,18 @@ import os, sys
 from time import sleep
 import time
 from types import *
+from maintenance.models import MaintenanceWindow
+
 try:
     from django.templatetags.static import static
 except ImportError: # 1.3 fallback
     from urlparse import urljoin
+
     def static(path):
         return urljoin(settings.STATIC_URL, path)
 
 from django.conf import settings
+
 logger = logging.getLogger("maintenance")
 
 def enum(**enums):
@@ -25,9 +29,13 @@ PENDING_MAINTENANCE_FILE = "%s_" % MAINTENANCE_FILE
 MAINTENANCE_URL = getattr(settings, 'MAINTENANCE_URL', static('maintenance/maintenance.html'))
 
 SUCCESS = 0
-ERROR_BREAK   =1
-ERROR_TIMEOUT =2
-ERROR_GENERIC =3
+ERROR_BREAK = 1
+ERROR_TIMEOUT = 2
+ERROR_GENERIC = 3
+
+class MaintenanceModeError(Exception):
+    pass
+
 
 def start(ignore_session=False, timeout=60, verbosity=1):
     """ activate maintenance mode.
@@ -54,7 +62,7 @@ def start(ignore_session=False, timeout=60, verbosity=1):
                             "%s pending sessions. %s (%d sec)\r" % (users, C[rounds % 2], round(time.time() - _start)))
                         sys.stdout.flush()
                 rounds += 1
-                if rounds>= timeout:
+                if rounds >= timeout:
                     return ERROR_TIMEOUT, '\nTimeout'
                 sleep(1)
         except KeyboardInterrupt:
@@ -81,6 +89,7 @@ def stop():
     logger.info('Maintenance mode stop')
     return 0, 'Maintenance mode stop'
 
+
 def get_active_users():
     from django.db import transaction
     from django.contrib.sessions.models import Session
@@ -106,6 +115,9 @@ def is_online():
 
 
 def status():
+#    if MaintenanceWindow.objects.actives():
+#        return STATUS.SOFT
+
     if is_offline():
         return STATUS.OFFLINE
     elif is_pending():

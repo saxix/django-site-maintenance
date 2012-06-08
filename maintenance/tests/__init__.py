@@ -5,9 +5,9 @@ from django.test.testcases import TestCase
 import os
 import time
 from maintenance import api, middleware
-from maintenance.api import SUCCESS, ERROR_TIMEOUT
+from maintenance.api import SUCCESS, ERROR_TIMEOUT, MaintenanceModeError
 from maintenance.tests.future import SimpleTestCase
-from maintenance.utils import register_session
+from maintenance.utils import register_session, CommandTask
 
 class MaintenanceTestCaseMixIn(object):
 
@@ -35,6 +35,13 @@ class MaintenanceTestCaseMixIn(object):
     def tearDown(self):
         api.stop()
 
+class TestContext(TestCase, MaintenanceTestCaseMixIn):
+    def test1(self):
+        session_key = temp.NamedTemporaryFile('rw', delete=True).name
+        api.start(True)
+        self.assertRaises(MaintenanceModeError, CommandTask, session_key, timeout=2, check_maintenance=True)
+#        with CommandTask(session_key, timeout=2):
+#            self.fail()
 
 class TestCommand(TestCase, MaintenanceTestCaseMixIn):
     def test_activate_deactivate(self):
