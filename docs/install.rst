@@ -59,7 +59,7 @@ Apache
     RewriteEngine On
     RewriteCond $MAINTENANCE_FILE -f
     RewriteCond %{REQUEST_URI} !/$STATIC_URL/maintenance/under-maintenance.gif
-    RewriteRule ^(.+) $MAINTENANCE_URL [RL]
+    RewriteRule ^(.+) $MAINTENANCE_URL [R,L]
 
 
 NGNIX
